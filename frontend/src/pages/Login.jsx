@@ -7,7 +7,7 @@ function Login({ setIsAuth, setShowRegister }) {
 
   const handleLogin = async () => {
     try {
-      const res = await API.post("/auth/login", {
+      const res = await API.post("/api/auth/login", {
         username,
         password,
       });
