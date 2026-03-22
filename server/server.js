@@ -12,9 +12,7 @@ const authRoutes = require("./routes/authRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 
 // Middleware
-app.use(cors({
-  origin: "https://analytics-dashboard-iota-beryl.vercel.app/", // production me specific domain rakh sakte ho
-}));
+app.use(cors());
 
 app.use(express.json());
 
@@ -28,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 // Server start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
