@@ -16,6 +16,7 @@ import {
 function Dashboard() {
     const [data, setData] = useState([]);
     const [lineData, setLineData] = useState([]);
+    const [selectedFeature, setSelectedFeature] = useState("date_filter");
 
     const [filters, setFilters] = useState({
         startDate: "",
@@ -33,7 +34,7 @@ function Dashboard() {
     };
 
     // fetch line data
-    const fetchLineData = async (feature = "date_filter") => {
+    const fetchLineData = async (feature) => {
         const res = await API.get(`/api/analytics/line?feature_name=${feature}`);
         setLineData(res.data);
         console.log("Line data:", res.data);
@@ -52,7 +53,7 @@ function Dashboard() {
             const parsed = JSON.parse(savedFilters);
             setFilters(parsed);
         } else {
-            // default filters (last 30 days, age range, gender optional)
+            // default filters (last 30 days)
             const today = new Date().toISOString().split("T")[0];
             const past = new Date();
             past.setDate(past.getDate() - 30);
@@ -69,23 +70,26 @@ function Dashboard() {
 
     useEffect(() => {
         fetchAnalytics();
-        fetchLineData();
     }, [filters]);
+
+    useEffect(() => {
+        if (selectedFeature) {
+            fetchLineData(selectedFeature);
+        }
+    }, [selectedFeature, filters]);
 
     const handleChange = (e) => {
         const updated = { ...filters, [e.target.name]: e.target.value };
-
         setFilters(updated);
-
-        // save in cookies
         Cookies.set("filters", JSON.stringify(updated), { expires: 7 });
-
         track("filter_change");
     };
 
-    const applyFilters = () => {
-        fetchAnalytics();
-        fetchLineData();
+    const applyFilters = async () => {
+        await fetchAnalytics();
+        if (data.length > 0) {
+            setSelectedFeature(data[0].feature_name); // top feature ka trend
+        }
     };
 
     return (
@@ -103,7 +107,6 @@ function Dashboard() {
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 />
-
                 <input
                     type="date"
                     name="endDate"
@@ -111,7 +114,6 @@ function Dashboard() {
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 />
-
                 <select
                     name="age"
                     value={filters.age}
@@ -121,7 +123,6 @@ function Dashboard() {
                     <option value="">Select Age</option>
                     <option value="18-40">18-40</option>
                 </select>
-
                 <select
                     name="gender"
                     value={filters.gender}
@@ -146,12 +147,18 @@ function Dashboard() {
 
                 {/* Bar Chart */}
                 <div className="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 className="text-lg font-semibold mb-4">
-                        Feature Usage
-                    </h2>
-
+                    <h2 className="text-lg font-semibold mb-4">Feature Usage</h2>
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart width={500} height={300} data={data}>
+                        <BarChart
+                            width={500}
+                            height={300}
+                            data={data}
+                            onClick={(e) => {
+                                if (e && e.activeLabel) {
+                                    setSelectedFeature(e.activeLabel);
+                                }
+                            }}
+                        >
                             <XAxis dataKey="feature_name" />
                             <YAxis />
                             <Tooltip />
@@ -163,20 +170,15 @@ function Dashboard() {
                 {/* Line Chart */}
                 <div className="bg-white p-6 rounded-2xl shadow-md">
                     <h2 className="text-lg font-semibold mb-4">
-                        Daily Trend
+                        Daily Trend ({selectedFeature})
                     </h2>
-
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart data={lineData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
                             <YAxis />
                             <Tooltip />
-                            <Line
-                                type="monotone"
-                                dataKey="count"
-                                stroke="#2563eb"
-                            />
+                            <Line type="monotone" dataKey="count" stroke="#2563eb" />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
