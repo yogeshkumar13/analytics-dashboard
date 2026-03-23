@@ -89,9 +89,15 @@ function Dashboard() {
         }
     }, []);
 
+    // useEffect(() => {
+    //     fetchAnalytics();
+    // }, [filters]);
+
     useEffect(() => {
-        fetchAnalytics();
-    }, [filters]);
+        if (selectedFeature) {
+            fetchLineData(selectedFeature);
+        }
+    }, [selectedFeature]);
 
     useEffect(() => {
         if (selectedFeature) {
@@ -109,7 +115,7 @@ function Dashboard() {
     const applyFilters = async () => {
         await fetchAnalytics();
         if (data.length > 0) {
-            setSelectedFeature(data[0].feature_name); // top feature ka trend
+            setSelectedFeature(data[0].feature_name);
         }
     };
 
