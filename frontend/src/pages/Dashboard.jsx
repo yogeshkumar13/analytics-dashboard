@@ -150,11 +150,10 @@ function Dashboard() {
                     <h2 className="text-lg font-semibold mb-4">Feature Usage</h2>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart
-                            width={500}
-                            height={300}
                             data={data}
                             onClick={(e) => {
                                 if (e && e.activeLabel) {
+                                    track("bar_chart_click");   // DB me insert hoga
                                     setSelectedFeature(e.activeLabel);
                                 }
                             }}
@@ -173,7 +172,10 @@ function Dashboard() {
                         Daily Trend ({selectedFeature})
                     </h2>
                     <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={lineData}>
+                        <LineChart
+                            data={lineData}
+                            onClick={() => track("line_chart_click")}
+                        >
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
                             <YAxis />
