@@ -27,20 +27,20 @@ function Dashboard() {
     // fetch bar data
     const fetchAnalytics = async () => {
         const query = new URLSearchParams(filters).toString();
-        const res = await API.get(`/analytics?${query}`);
+        const res = await API.get(`/api/analytics?${query}`);
         setData(res.data);
         console.log("Bar data:", res.data);
     };
 
     // fetch line data
     const fetchLineData = async (feature = "date_filter") => {
-        const res = await API.get(`/line?feature_name=${feature}`);
+        const res = await API.get(`/api/analytics/line?feature_name=${feature}`);
         setLineData(res.data);
         console.log("Line data:", res.data);
     };
 
     const track = async (name) => {
-        await API.post("/track", {
+        await API.post("/api/analytics/track", {
             feature_name: name,
         });
     };
@@ -51,14 +51,25 @@ function Dashboard() {
         if (savedFilters) {
             const parsed = JSON.parse(savedFilters);
             setFilters(parsed);
+        } else {
+            // default filters (last 30 days, age range, gender optional)
+            const today = new Date().toISOString().split("T")[0];
+            const past = new Date();
+            past.setDate(past.getDate() - 30);
+            const pastDate = past.toISOString().split("T")[0];
+
+            setFilters({
+                startDate: pastDate,
+                endDate: today,
+                age: "18-40",
+                gender: "",
+            });
         }
     }, []);
 
     useEffect(() => {
-        if (filters.startDate && filters.endDate) {
-            fetchAnalytics();
-            fetchLineData();
-        }
+        fetchAnalytics();
+        fetchLineData();
     }, [filters]);
 
     const handleChange = (e) => {
@@ -88,6 +99,7 @@ function Dashboard() {
                 <input
                     type="date"
                     name="startDate"
+                    value={filters.startDate}
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 />
@@ -95,12 +107,14 @@ function Dashboard() {
                 <input
                     type="date"
                     name="endDate"
+                    value={filters.endDate}
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 />
 
                 <select
                     name="age"
+                    value={filters.age}
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 >
@@ -110,6 +124,7 @@ function Dashboard() {
 
                 <select
                     name="gender"
+                    value={filters.gender}
                     onChange={handleChange}
                     className="border p-2 rounded-lg"
                 >
