@@ -10,32 +10,31 @@ const createClick = async (user_id, feature_name) => {
     return result.rows[0];
 };
 
-const getFeatureAnalytics = async (filters) => {
-    const { startDate, endDate, age, gender } = filters;
-
+const getFeatureAnalytics = async ({ startDate, endDate, age, gender }) => {
     let query = `
-    SELECT fc.feature_name, COUNT(*) as total_clicks
-    FROM feature_clicks fc
-    JOIN users u ON fc.user_id = u.id
-    WHERE 1=1
-  `;
+        SELECT fc.feature_name, COUNT(*) AS total_clicks
+        FROM feature_clicks fc
+        JOIN users u ON fc.user_id = u.id
+        WHERE 1=1
+    `;
 
-    let values = [];
+    const values = [];
+    let idx = 1; // parameter counter
 
     if (startDate && endDate) {
+        query += ` AND fc.timestamp BETWEEN $${idx} AND $${idx + 1}`;
         values.push(startDate, endDate);
-        query += ` AND fc.timestamp BETWEEN $${values.length - 1} AND $${values.length}`;
+        idx += 2;
     }
 
-    if (age) {
-        if (age === "18-40") {
-            query += ` AND u.age BETWEEN 18 AND 40`;
-        }
+    if (age && age === "18-40") {
+        query += ` AND u.age BETWEEN 18 AND 40`;
     }
 
     if (gender) {
+        query += ` AND u.gender = $${idx}`;
         values.push(gender);
-        query += ` AND u.gender = $${values.length}`;
+        idx++;
     }
 
     query += ` GROUP BY fc.feature_name ORDER BY total_clicks DESC`;
@@ -45,14 +44,15 @@ const getFeatureAnalytics = async (filters) => {
 };
 
 const getLineChartData = async (feature_name) => {
-    const result = await pool.query(`
-    SELECT DATE(timestamp) as date, COUNT(*) as count
-    FROM feature_clicks
-    WHERE feature_name = $1
-    GROUP BY date
-    ORDER BY date ASC
-  `, [feature_name]);
-
+    const query = `
+        SELECT DATE(fc.timestamp) AS date, COUNT(*) AS count
+        FROM feature_clicks fc
+        WHERE fc.feature_name = $1
+        GROUP BY DATE(fc.timestamp)
+        ORDER BY DATE(fc.timestamp) ASC
+    `;
+    const result = await pool.query(query, [feature_name]);
     return result.rows;
 };
+
 module.exports = { createClick, getFeatureAnalytics, getLineChartData };
