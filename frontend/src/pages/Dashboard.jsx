@@ -29,18 +29,18 @@ function Dashboard() {
         const query = new URLSearchParams(filters).toString();
         const res = await API.get(`/analytics?${query}`);
         setData(res.data);
+        console.log("Bar data:", res.data);
     };
 
     // fetch line data
-    const fetchLineData = async () => {
-        const res = await API.get(
-            `/analytics/line?feature_name=date_filter`
-        );
+    const fetchLineData = async (feature = "date_filter") => {
+        const res = await API.get(`/line?feature_name=${feature}`);
         setLineData(res.data);
+        console.log("Line data:", res.data);
     };
 
     const track = async (name) => {
-        await API.post("/analytics/track", {
+        await API.post("/track", {
             feature_name: name,
         });
     };
@@ -52,10 +52,14 @@ function Dashboard() {
             const parsed = JSON.parse(savedFilters);
             setFilters(parsed);
         }
-
-        fetchAnalytics();
-        fetchLineData();
     }, []);
+
+    useEffect(() => {
+        if (filters.startDate && filters.endDate) {
+            fetchAnalytics();
+            fetchLineData();
+        }
+    }, [filters]);
 
     const handleChange = (e) => {
         const updated = { ...filters, [e.target.name]: e.target.value };
@@ -70,6 +74,7 @@ function Dashboard() {
 
     const applyFilters = () => {
         fetchAnalytics();
+        fetchLineData();
     };
 
     return (
@@ -131,8 +136,7 @@ function Dashboard() {
                     </h2>
 
                     <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={data}>
-                            <CartesianGrid strokeDasharray="3 3" />
+                        <BarChart width={500} height={300} data={data}>
                             <XAxis dataKey="feature_name" />
                             <YAxis />
                             <Tooltip />
