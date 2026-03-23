@@ -6,7 +6,7 @@ const trackClick = async (req, res) => {
         console.log("API HIT");
         const { feature_name } = req.body;
 
-        // user id JWT se aayega (abhi manually test karenge)
+        // user id from JWT (fallback for testing)
         const user_id = req.user?.id || 1;
 
         const click = await createClick(user_id, feature_name);
@@ -18,7 +18,7 @@ const trackClick = async (req, res) => {
     }
 };
 
-// Get analytics data
+// Get analytics data (bar chart)
 const getAnalytics = async (req, res) => {
     try {
         const { startDate, endDate, age, gender } = req.query;
@@ -30,20 +30,33 @@ const getAnalytics = async (req, res) => {
             gender,
         });
 
-        res.json(data);
+        // Ensure correct keys for frontend
+        const formatted = data.map(row => ({
+            feature_name: row.feature_name,
+            total_clicks: Number(row.total_clicks)
+        }));
+
+        res.json(formatted);
     } catch (err) {
         console.log(err);
         res.status(500).send("Analytics error");
     }
 };
 
+// Get line chart data
 const getLineData = async (req, res) => {
     try {
         const { feature_name } = req.query;
 
         const data = await getLineChartData(feature_name);
 
-        res.json(data);
+        // Ensure correct keys for frontend
+        const formatted = data.map(row => ({
+            date: row.date,
+            count: Number(row.count)
+        }));
+
+        res.json(formatted);
     } catch (err) {
         console.log(err);
         res.status(500).send("Line chart error");
