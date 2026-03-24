@@ -19,7 +19,7 @@ const getFeatureAnalytics = async ({ startDate, endDate, age, gender }) => {
     `;
 
     const values = [];
-    let idx = 1; // parameter counter
+    let idx = 1;
 
     if (startDate && endDate) {
         query += ` AND fc.timestamp BETWEEN $${idx} AND $${idx + 1}`;
