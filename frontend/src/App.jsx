@@ -4,15 +4,13 @@ import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 
 function App() {
-  const [isAuth, setIsAuth] = useState(
-    localStorage.getItem("token") ? true : false
-  );
+  const [isAuth, setIsAuth] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
   return (
     <>
       {isAuth ? (
-        <Dashboard setIsAuth={setIsAuth} />
+        <Dashboard />
       ) : showRegister ? (
         <Register setShowRegister={setShowRegister} />
       ) : (
