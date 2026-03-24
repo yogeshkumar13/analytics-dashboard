@@ -22,16 +22,15 @@ function Login({ setIsAuth, setShowRegister }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      
-      {/* Card */}
+
+
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        
-        {/* Title */}
+
+
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Welcome Back 👋
         </h2>
 
-        {/* Username */}
         <input
           type="text"
           placeholder="Username"
@@ -39,7 +38,7 @@ function Login({ setIsAuth, setShowRegister }) {
           className="w-full mb-4 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* Password */}
+        
         <input
           type="password"
           placeholder="Password"
@@ -47,7 +46,7 @@ function Login({ setIsAuth, setShowRegister }) {
           className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* Button */}
+        
         <button
           onClick={handleLogin}
           className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
@@ -55,7 +54,7 @@ function Login({ setIsAuth, setShowRegister }) {
           Login
         </button>
 
-        {/* Register Link */}
+        
         <p className="text-center mt-4 text-gray-600">
           Don't have an account?
           <span

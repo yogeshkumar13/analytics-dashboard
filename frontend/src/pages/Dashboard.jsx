@@ -28,7 +28,7 @@ function Dashboard() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // fetch bar data
+
     const fetchAnalytics = async () => {
         try {
             setLoading(true);
@@ -43,7 +43,7 @@ function Dashboard() {
         }
     };
 
-    // fetch line data
+
     const fetchLineData = async (feature) => {
         try {
             setLoading(true);
@@ -74,7 +74,7 @@ function Dashboard() {
             const parsed = JSON.parse(savedFilters);
             setFilters(parsed);
         } else {
-            // default filters (last 30 days)
+
             const today = new Date().toISOString().split("T")[0];
             const past = new Date();
             past.setDate(past.getDate() - 30);
@@ -89,9 +89,6 @@ function Dashboard() {
         }
     }, []);
 
-    // useEffect(() => {
-    //     fetchAnalytics();
-    // }, [filters]);
 
     useEffect(() => {
         if (selectedFeature) {
@@ -119,7 +116,7 @@ function Dashboard() {
         }
     };
 
-    // Summary metrics
+
     const totalClicks = data.reduce((sum, row) => sum + row.total_clicks, 0);
     const topFeature = data.length > 0 ? data[0].feature_name : "N/A";
 
@@ -129,14 +126,13 @@ function Dashboard() {
                 Analytics Dashboard 📊
             </h1>
 
-            {/* Summary Card */}
             <div className="bg-white p-4 rounded-xl shadow-md mb-6">
                 <h2 className="text-lg font-semibold">Summary</h2>
                 <p>Total Clicks: {totalClicks}</p>
                 <p>Top Feature: {topFeature}</p>
             </div>
 
-            {/* Filters */}
+
             <div className="bg-white p-6 rounded-2xl shadow-md mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="date" name="startDate" value={filters.startDate} onChange={handleChange} className="border p-2 rounded-lg" />
                 <input type="date" name="endDate" value={filters.endDate} onChange={handleChange} className="border p-2 rounded-lg" />
@@ -155,13 +151,13 @@ function Dashboard() {
                 Apply Filters
             </button>
 
-            {/* Loading/Error */}
+
             {loading && <p className="text-blue-600">Loading data...</p>}
             {error && <p className="text-red-600">{error}</p>}
 
-            {/* Charts Grid */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Bar Chart */}
+
                 <div className="bg-white p-6 rounded-2xl shadow-md">
                     <h2 className="text-lg font-semibold mb-4">Feature Usage</h2>
                     <ResponsiveContainer width="100%" height={300}>
@@ -182,7 +178,7 @@ function Dashboard() {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Line Chart */}
+
                 <div className="bg-white p-6 rounded-2xl shadow-md">
                     <h2 className="text-lg font-semibold mb-4">
                         Daily Trend ({selectedFeature})

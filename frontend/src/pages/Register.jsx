@@ -23,7 +23,7 @@ function Register({ setShowRegister }) {
 
       alert("User registered successfully");
 
-      // back to login
+      
       setShowRegister(false);
 
     } catch (err) {
